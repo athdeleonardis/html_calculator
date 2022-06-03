@@ -1,7 +1,7 @@
 # html_calculator
 
-A simple HTML calculator. Currently fully implemented with left-right parsing of the calculator text.
-The HTML elements have classes to do CSS but currently no CSS has been done.
+A simple HTML calculator, implemented in JavaScript. Currently fully implemented with left-right parsing of the calculator text.
+Sample HTML and CSS files have been supplied to show the functionality of the calculator in real time.
 
 # License
 
