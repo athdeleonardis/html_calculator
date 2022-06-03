@@ -1,16 +1,16 @@
 
-calculator_element = document.getElementById("calculator")
-stored_result_element = null
-current_result_element = null
-calculation_element = null
+var calculator_element = document.getElementById("calculator")
+var stored_result_element = null
+var current_result_element = null
+var calculation_element = null
 
-stored_result = null
-current_result = null
-calculation_text = ""
+var stored_result = null
+var current_result = null
+var calculation_text = ""
 
 const CALCULATION_EMPTY = "Enter calculation"
-const CURRENT_RESULT_PREFIX = "Current result = "
-const STORED_RESULT_PREFIX = "Stored result = "
+const CURRENT_RESULT_PREFIX = "Current result = \n"
+const STORED_RESULT_PREFIX = "Stored result = \n"
 const RESULT_EMPTY = "..."
 
 // Classes for CSS beautification
@@ -65,7 +65,7 @@ function assemble_keypad() {
     keypad_element = document.createElement("div");
     keypad_element.classList.add(KEYPAD_CLASS)
 
-    const button_lists = [ "+-x/", "789<", "456(", "123)", "0.r=" ]
+    const button_lists = [ "+-x/", "789<", "456(", "123)", "0.r=^" ]
 
     button_lists.forEach((button_list) => keypad_element.appendChild(assemble_keypad_row(button_list)))
 
@@ -75,9 +75,6 @@ function assemble_keypad() {
 function assemble_keypad_row(buttons) {
     keypad_row = document.createElement("div")
     keypad_row.classList.add(KEYPAD_ROW_CLASS)
-
-    console.log(buttons)
-    console.log(typeof(buttons))
 
     Array.from(buttons).forEach((c) => keypad_row.appendChild(assemble_button(c)))
 
@@ -94,22 +91,34 @@ function assemble_button(c) {
 }
 
 function buttonOnClick(c) {
-    if (c == '=') {
-        if (current_result != null) {
-            stored_result = current_result
-            calculation_text = ""
-        }
+    var is_number = true
+    switch (c) {
+        case '=':
+            if (current_result != null) {
+                stored_result = current_result
+                calculation_text = ""
+            }
+            is_number = false
+            break
+        case '<':
+            calculation_text = (calculation_text.length == 0)
+                ? ""
+                : calculation_text.substring(0, calculation_text.length-1)
+            is_number = false
+            break
+        case 'r':
+            if (stored_result != null)
+                calculation_text += c
+            is_number = false
+            break
+        case '^':
+            if (current_result != null)
+                stored_result = current_result
+            is_number = false
+            break
     }
-    else if (c == '<') {
-        calculation_text = (calculation_text.length == 0)
-            ? ""
-            : calculation_text.substring(0, calculation_text.length-1)
-    }
-    else {
-        if (c == 'r' && stored_result == null);
-        else
-            calculation_text += c
-    }
+    if (is_number)
+        calculation_text += c
 
     updateCalculationElement()
     updateCurrentResultElement()
@@ -123,7 +132,7 @@ function updateCalculationElement() {
 }
 
 function updateCurrentResultElement() {
-    current_result = parseCalculation(calculation_text)
+    current_result = parse_calculation(calculation_text, stored_result)
 
     current_result_element.innerHTML = CURRENT_RESULT_PREFIX
     if (current_result == null)
@@ -138,11 +147,4 @@ function updateStoredResultElement() {
         stored_result_element.innerHTML += RESULT_EMPTY
     else
         stored_result_element.innerHTML += stored_result
-}
-
-function parseCalculation(text) {
-    result = parseFloat(text)
-    if (isNaN(result))
-        return null
-    return result
 }
